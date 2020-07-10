@@ -46,14 +46,14 @@ int main(int argc, char *argv[])
         dest_addr.sin_family = AF_INET;
         dest_addr.sin_port = htons(atoi(argv[2]));
         inet_aton(argv[1], &(dest_addr.sin_addr));
-        printf("Sendig messages to: %s:%d\n", inet_ntoa(dest_addr.sin_addr), ntohs(dest_addr.sin_port));
+        printf("Sending messages to: %s:%d\n", inet_ntoa(dest_addr.sin_addr), ntohs(dest_addr.sin_port));
     }
     if (argc == 2) { // Only PORT
         memset(&dest_addr, 0, sizeof(struct sockaddr_in));
         dest_addr.sin_family = AF_INET;
         dest_addr.sin_port = htons(atoi(argv[1]));
         dest_addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-        printf("Sendig messages to: %s:%d\n", inet_ntoa(dest_addr.sin_addr), ntohs(dest_addr.sin_port));
+        printf("Sending messages to: %s:%d\n", inet_ntoa(dest_addr.sin_addr), ntohs(dest_addr.sin_port));
     }
 
     printf("^C to exit.\n");
