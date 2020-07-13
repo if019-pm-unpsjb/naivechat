@@ -98,4 +98,3 @@ void* recv_thread(void* args)
 
     exit(EXIT_SUCCESS);
 }
-

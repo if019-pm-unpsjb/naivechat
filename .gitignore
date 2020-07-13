@@ -66,3 +66,4 @@ dkms.conf
 # binaries
 client
 server
+minclient

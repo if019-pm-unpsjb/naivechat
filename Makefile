@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-Wall -Werror -g -pthread 
 
-PROG=client
+PROG=client minclient
 
 .PHONY: all
 all: $(PROG)
