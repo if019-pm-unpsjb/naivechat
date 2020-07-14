@@ -43,9 +43,8 @@ int main(int argc, char *argv[])
     if (strlen(buf) > 0) {
         inet_aton(strtok(buf, ":"), &(addr.sin_addr));
         addr.sin_port = htons(atoi(strtok(NULL, ":")));
-        printf("The messages will be sended to: %s:%d\n", inet_ntoa(addr.sin_addr), ntohs(addr.sin_port));
     }
-
+    printf("The messages will be sended to: %s:%d\n", inet_ntoa(addr.sin_addr), ntohs(addr.sin_port));
     printf("^C to exit.\n");
 
     recvt = pthread_create(&recvt, NULL, recv_thread, NULL);
