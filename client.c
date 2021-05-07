@@ -28,19 +28,30 @@ int main(int argc, char *argv[])
     struct sockaddr_in my_addr;
 
     sock = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sock == -1) {
+        perror("socket");
+        exit(EXIT_FAILURE);
+    }
 
     memset(&my_addr, 0, sizeof(struct sockaddr_in));
     my_addr.sin_family = AF_INET;
     my_addr.sin_port = (in_port_t) 0;
     my_addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 
-    bind(sock, (struct sockaddr*) &my_addr, (socklen_t) sizeof(struct sockaddr_in));
+    if (bind(sock, (struct sockaddr*) &my_addr, (socklen_t) sizeof(struct sockaddr_in)) == -1) {
+        perror("bind");
+        exit(EXIT_FAILURE);
+    }
 
     socklen_t my_addr_len = (socklen_t) sizeof(my_addr);
-    getsockname(sock, (struct sockaddr*) &my_addr, &my_addr_len); 
+    if (getsockname(sock, (struct sockaddr*) &my_addr, &my_addr_len) == -1) {
+        perror("getsockname");
+        exit(EXIT_FAILURE);
+    }
     printf("Listening on: %s:%d\n", inet_ntoa(my_addr.sin_addr), ntohs(my_addr.sin_port));
 
     dest_addr_len = sizeof(dest_addr);
+
     if (argc == 3) { // IP:PORT
         memset(&dest_addr, 0, sizeof(struct sockaddr_in));
         dest_addr.sin_family = AF_INET;
@@ -48,6 +59,7 @@ int main(int argc, char *argv[])
         inet_aton(argv[1], &(dest_addr.sin_addr));
         printf("Sending messages to: %s:%d\n", inet_ntoa(dest_addr.sin_addr), ntohs(dest_addr.sin_port));
     }
+
     if (argc == 2) { // Only PORT
         memset(&dest_addr, 0, sizeof(struct sockaddr_in));
         dest_addr.sin_family = AF_INET;
@@ -58,13 +70,26 @@ int main(int argc, char *argv[])
 
     printf("^C to exit.\n");
 
-    recvt = pthread_create(&recvt, NULL, recv_thread, NULL);
-    sendt = pthread_create(&sendt, NULL, send_thread, NULL);
+    if (pthread_create(&recvt, NULL, recv_thread, NULL) > 0) {
+        perror("pthread_create");
+        exit(EXIT_FAILURE);
+    }
 
-    pthread_join(recvt, NULL);
-    pthread_join(sendt, NULL);
+    if (pthread_create(&sendt, NULL, send_thread, NULL) > 0) {
+        perror("pthread_create");
+        exit(EXIT_FAILURE);
+    }
 
-    pthread_exit(NULL);
+    if (pthread_join(recvt, NULL) > 0) {
+        perror("pthread_join");
+        exit(EXIT_FAILURE);
+    }
+    if (pthread_join(sendt, NULL) > 0) {
+        perror("pthread_join");
+        exit(EXIT_FAILURE);
+    }
+
+    exit(EXIT_SUCCESS);
 }
 
 void* send_thread(void* args)
